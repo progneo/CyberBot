@@ -1,0 +1,8 @@
+version: '3.4'
+
+services:
+  cyberbot:
+    image: cyberbot
+    build:
+      context: .
+      dockerfile: ./Dockerfile
