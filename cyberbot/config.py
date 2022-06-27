@@ -4,7 +4,7 @@ import cyberbot
 
 
 def bot_owner():
-    return eval(os.getenv('BOT_owner', "296981333811396608"))
+    return eval(os.getenv('BOT_OWNER', "296981333811396608"))
 
 def bot_token():
     return os.getenv('BOT_TOKEN')
