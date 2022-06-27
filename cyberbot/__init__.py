@@ -11,7 +11,7 @@ from .setup import *
 from .config import *
 
 def version():
-    return "v0.1.0"
+    return "v0.1.0-alpha"
 
 
 def config_version():
