@@ -15,3 +15,11 @@ def is_owner() -> Callable[[T], T]:
         return True
 
     return commands.check(predicate)
+
+def is_nswf() -> Callable[[T], T]:
+    async def predicate(context: commands. Context) -> bool:
+        if not context.channel.nsfw:
+            raise ChannelNotNsfw
+        return True
+    
+    return commands.check(predicate)
