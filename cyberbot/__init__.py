@@ -4,15 +4,14 @@ import socket
 import sys
 
 from .cogs import *
+from .exceptions import *
+from .helpers import *
 from .managers import *
-from .tools import *
-from .config import *
-from .events import *
-from .messages import *
 from .setup import *
+from .config import *
 
 def version():
-    return "v0.0.1"
+    return "v0.1.0"
 
 
 def config_version():

@@ -1,24 +1,16 @@
 import os
 
-import cyberbot
 
+def bot_owner() -> int:
+    return 296981333811396608
 
-def bot_owner():
-    return eval(os.getenv('BOT_owner', "296981333811396608"))
 
 def bot_token():
     return os.getenv('BOT_TOKEN')
 
+
 def bot_prefix():
     return os.getenv('BOT_PREFIX')
-
-
-def bot_status():
-    default_prefix = f'{", ".join(cyberbot.config.bot_prefix())} | cyberbot.py {cyberbot.version()}'
-    try:
-        return eval(os.getenv('BOT_STATUS', default_prefix))
-    except:
-        return os.getenv('BOT_STATUS', default_prefix)
 
 
 def db_host():

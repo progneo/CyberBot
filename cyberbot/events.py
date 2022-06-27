@@ -1,22 +1,16 @@
 import json
 import cyberbot
-import discord
+import disnake
 from profanity_check import predict_prob
+from disnake.ext import commands as cmd
 
 
-def __init__(bot):
-    """ Initialize events """
-    join(bot)
-    leave(bot)
-    on_guild_join(bot)
-    message_send(bot)
-    message_edit(bot)
-    message_delete(bot)
+class Events(cmd.Cog, name="Events"):
+    def __init__(self, bot):
+        self.bot = bot
 
-
-def join(bot):
-    @bot.event
-    async def on_member_join(member):
+    @self.bot.event
+    async def on_member_join(self, member):
         # TODO: something idk
         pass
 
@@ -54,7 +48,7 @@ def message_send(bot):
         # profanity check
         prob = predict_prob([msg])
         if prob >= 0.8:
-            em = discord.Embed(title=f"AI Analysis Results", color=0xC54B4F)
+            em = disnake.Embed(title=f"AI Analysis Results", color=0xC54B4F)
             em.add_field(name='PROFANITY DETECTED! ', value=str(prob[0]))
             await message.channel.send(embed=em)
 

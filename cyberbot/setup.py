@@ -13,8 +13,6 @@ def __init__():
     input_db_password = ""
 
     input_bot_token = input("Discord bot token: ")
-    input_bot_prefix = input("Command Prefix: ")
-    input_bot_status = input("Bot status: (Playing xxx) ")
     input_db_host = input("Database Host: ")
     input_db_database = input("Database name: ")
     input_db_user = input("Database User: ")
@@ -26,8 +24,6 @@ def __init__():
     try:
         config = f"""CONFIG_VERSION=0.1
 BOT_TOKEN={input_bot_token}
-BOT_PREFIX={input_bot_prefix}
-BOT_STATUS={input_bot_status}
 DB_HOST={input_db_host}
 DB_DATABASE={input_db_database}
 DB_USER={input_db_user}
