@@ -1,8 +1,8 @@
 import os
 
 
-def bot_owner():
-    return eval(os.getenv('BOT_OWNER', "296981333811396608"))
+def bot_owner() -> int:
+    return 296981333811396608
 
 
 def bot_token():

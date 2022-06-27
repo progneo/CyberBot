@@ -3,7 +3,7 @@ from disnake import ApplicationCommandInteraction, Option, OptionType
 from disnake.ext import commands as cmd
 
 
-class Moderation(cmd.Cog, name="moderation-slash"):
+class Moderation(cmd.Cog, name="moderation"):
     def __init__(self, bot):
         self.bot = bot
 

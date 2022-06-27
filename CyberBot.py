@@ -81,6 +81,7 @@ Version: {cyberbot.version()}
 async def on_ready():
     status_task.start()
     print(f"Connected to Discord API in {round(time.perf_counter() - discord_time_start, 2)}s")
+    print("-------------------")
     for guild in bot.guilds:
         # TODO: add guilds to database
         pass
@@ -102,6 +103,7 @@ def load_commands() -> None:
             except Exception as e:
                 exception = f"{type(e).__name__}: {e}"
                 print(f"Failed to load extension {extension}\n{exception}")
+    print("-------------------")
 
     
 @bot.event
