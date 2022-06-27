@@ -2,7 +2,8 @@ import cyberbot
 
 from typing import TypeVar, Callable
 from disnake.ext import commands
-from exceptions import *
+
+from cyberbot.exceptions import *
 
 T = TypeVar("T")
 
