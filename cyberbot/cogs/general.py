@@ -120,14 +120,19 @@ class General(cmd.Cog, name="general"):
     )
     async def invite(self, interaction: ApplicationCommandInteraction) -> None:
         embed = disnake.Embed(
+            title="Invite link",
             description=f"Invite me by clicking [here](https://discordapp.com/oauth2/authorize?client_id=612885675238359042&permissions=8&scope=bot",
             color=0xD75BF4
         )
         try:
             await interaction.author.send(embed=embed)
-            await interaction.send("I sent you a private message!")
+            await interaction.send(embed=disnake.Embed(
+                        title="Success",
+                        description=f"Check your private messages",
+                        color=0x9C84EF
+                    ), ephemeral=True)
         except disnake.Forbidden:
-            await interaction.send(embed=embed)
+            await interaction.send(embed=embed, ephemeral=True)
             
     @cmd.slash_command(
         name="bitcoin",

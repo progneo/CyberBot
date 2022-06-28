@@ -17,7 +17,7 @@ def __init__():
     osu_api_key = input("osu! api key: ")
 
     try:
-        config = f"""CONFIG_VERSION=0.1
+        config = f"""CONFIG_VERSION={cyberbot.config_version()}
 BOT_TOKEN={bot_token}
 DB_HOST={db_host}
 DB_DATABASE={db_database}
