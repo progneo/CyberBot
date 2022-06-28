@@ -1,6 +1,5 @@
 import json
 import disnake
-from numpy import integer
 
 import requests
 import disnake
