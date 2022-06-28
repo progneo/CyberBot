@@ -5,7 +5,6 @@ import sys
 
 from .cogs import *
 from .exceptions import *
-from .helpers import *
 from .managers import *
 from .setup import *
 from .config import *

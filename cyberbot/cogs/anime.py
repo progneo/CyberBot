@@ -10,7 +10,6 @@ from disnake import ApplicationCommandInteraction, Option, OptionType
 from disnake.ext import commands as cmd
 
 import cyberbot
-from cyberbot.helpers import checks
 
 
 class Anime(cmd.Cog):
