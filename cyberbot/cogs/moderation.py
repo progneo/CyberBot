@@ -23,7 +23,13 @@ class Moderation(cmd.Cog, name="moderation"):
     )
     @cmd.has_guild_permissions(manage_messages=True)
     async def purge(self, interaction: ApplicationCommandInteraction, amount: int) -> None:
-        await interaction.channel.purge(limit=amount + 1)
+        purged_messages = await interaction.channel.purge(limit=amount)
+        embed = disnake.Embed(
+            title="Chat Cleared!",
+            description=f"**{interaction.author}** cleared **{len(purged_messages)}** messages!",
+            color=0x9C84EF
+        )
+        await interaction.send(embed=embed, ephemeral=True)
         
     @cmd.slash_command(
         name="kick",

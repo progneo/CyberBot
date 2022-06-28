@@ -2,9 +2,6 @@ import disnake
 from disnake import ApplicationCommandInteraction, Option, OptionType
 from disnake.ext import commands
 
-from cyberbot.helpers import checks
-
-
 class Owner(commands.Cog, name="owner"):
     def __init__(self, bot):
         self.bot = bot
@@ -13,7 +10,7 @@ class Owner(commands.Cog, name="owner"):
         name="shutdown",
         description="Make the bot shutdown.",
     )
-    @checks.is_owner()
+    @commands.is_owner()
     async def shutdown(self, interaction: ApplicationCommandInteraction) -> None:
         embed = disnake.Embed(
             description="Shutting down. Bye! :wave:",
@@ -34,7 +31,7 @@ class Owner(commands.Cog, name="owner"):
             )
         ],
     )
-    @checks.is_owner()
+    @commands.is_owner()
     async def say(self, interaction: ApplicationCommandInteraction, message: str) -> None:
         await interaction.send(message)
 
@@ -50,14 +47,14 @@ class Owner(commands.Cog, name="owner"):
             )
         ],
     )
-    @checks.is_owner()
+    @commands.is_owner()
     async def embed(self, interaction: ApplicationCommandInteraction, message: str) -> None:
         embed = disnake.Embed(
             description=message,
             color=0x9C84EF
         )
         await interaction.send(embed=embed)
-
+        
 
 def setup(bot):
     bot.add_cog(Owner(bot))

@@ -6,31 +6,27 @@ import cyberbot
 def __init__():
     print("NOTE: You can change the settings later in .env")
 
-    # Declare default configuration
-    input_db_host = "127.0.0.1"
-    input_db_database = "cyberbot"
-    input_db_user = "root"
-    input_db_password = ""
-
-    input_bot_token = input("Discord bot token: ")
-    input_db_host = input("Database Host: ")
-    input_db_database = input("Database name: ")
-    input_db_user = input("Database User: ")
-    input_db_password = input("Database Password: ")
-    input_lavalink_host = input("Lavalink Host: ")
-    input_lavalink_port = input("Lavalink Port: ")
-    input_lavalink_password = input("Lavalink Password: ")
+    bot_token = input("Discord bot token: ")
+    db_host = input("Database Host: ")
+    db_database = input("Database name: ")
+    db_user = input("Database User: ")
+    db_password = input("Database Password: ")
+    lavalink_host = input("Lavalink Host: ")
+    lavalink_port = input("Lavalink Port: ")
+    lavalink_password = input("Lavalink Password: ")
+    osu_api_key = input("osu! api key: ")
 
     try:
-        config = f"""CONFIG_VERSION=0.1
-BOT_TOKEN={input_bot_token}
-DB_HOST={input_db_host}
-DB_DATABASE={input_db_database}
-DB_USER={input_db_user}
-DB_PASSWORD={input_db_password}
-LAVALINK_HOST={input_lavalink_host}
-LAVALINK_PORT={input_lavalink_port}
-LAVALINK_PASSWORD={input_lavalink_password}
+        config = f"""CONFIG_VERSION={cyberbot.config_version()}
+BOT_TOKEN={bot_token}
+DB_HOST={db_host}
+DB_DATABASE={db_database}
+DB_USER={db_user}
+DB_PASSWORD={db_password}
+LAVALINK_HOST={lavalink_host}
+LAVALINK_PORT={lavalink_port}
+LAVALINK_PASSWORD={lavalink_password}
+OSU_API_KEY={osu_api_key}
 """
         open('./.env', 'w').write(config)
         print("\n[*] Successfully created .env file!")

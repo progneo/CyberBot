@@ -19,7 +19,7 @@ from cyberbot.exceptions import *
 
 req = requests.get(f'https://api.github.com/repos/ProgNeo/CyberBot/tags')
 response = json.loads(req.text)
-"""
+
 if req.status_code == 200:
     if response[0]['name'] == cyberbot.version():
         print("You are currently running the latest version of CyberBot!\n")
@@ -46,7 +46,7 @@ elif req.status_code == 503:
 else:
     print("An unknown error has occurred when fetching the latest cyberbot.py version\n")
     print("HTML Error Code:" + str(req.status_code))
-"""
+
 
 load_dotenv(join(dirname(__file__), '.env'))
 
@@ -62,6 +62,8 @@ print("Initializing bot...")
 intents = disnake.Intents.default()
 
 bot = cmd.Bot(intents=intents, help_command=None)
+
+
 
 print(f"""
    ______      __              ____        __ 
@@ -105,6 +107,22 @@ def load_commands() -> None:
                 print(f"Failed to load extension {extension}\n{exception}")
     print("-------------------")
 
+def init_database() -> None:
+    time_start = time.perf_counter()
+    database = cyberbot.managers.database.__init__()
+    db = cyberbot.managers.database.db(database)
+    db.execute(f'USE `{cyberbot.config.db_database()}`')
+    db.execute('CREATE TABLE IF NOT EXISTS `guilds` (`guild_id` BIGINT, `guild_name` TINYTEXT)')
+    db.execute('CREATE TABLE IF NOT EXISTS `channels` (`channel_id` BIGINT, `channel_name` TINYTEXT)')
+    db.execute("CREATE TABLE IF NOT EXISTS `users` (`user_id` BIGINT, `user_name` TINYTEXT, `balance` BIGINT, `xp` INT, `lvl` INT, `user_discriminator` INT)")
+    db.execute("CREATE TABLE IF NOT EXISTS `bot_logs` (`timestamp` TEXT, `type` TINYTEXT, `class` TINYTEXT, `message` MEDIUMTEXT)")
+    cyberbot.managers.database.create_table("CREATE TABLE IF NOT EXISTS `guild_logs` (`timestamp` TEXT, `guild_id` BIGINT, `channel_id` BIGINT, `message_id` BIGINT, `user_id` BIGINT, `action_type` TINYTEXT, `message` MEDIUMTEXT)")
+
+    print(
+        f"Connected to database ({cyberbot.config.db_host()}) in {round(time.perf_counter() - time_start, 2)}s")
+
+    database.commit()
+    
     
 @bot.event
 async def on_message(message: disnake.Message) -> None:
@@ -182,6 +200,7 @@ async def on_command_error(context: Context, error) -> None:
 
 if __name__ == "__main__":
     load_commands()
+    init_database()
     
 try:
     discord_time_start = time.perf_counter()
