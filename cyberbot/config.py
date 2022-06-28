@@ -6,11 +6,11 @@ def bot_owner() -> int:
 
 
 def bot_token():
-    return os.getenv('BOT_TOKEN')
+    return os.environ['BOT_TOKEN']
 
 
 def bot_prefix():
-    return os.getenv('BOT_PREFIX')
+    return os.environ['BOT_PREFIX']
 
 
 def db_host():
@@ -39,3 +39,7 @@ def lavalink_port():
 
 def lavalink_password():
     return os.environ['LAVALINK_PASSWORD']
+
+
+def osu_api_key():
+    return os.environ['OSU_API_KEY']
