@@ -4,6 +4,7 @@ from disnake import ApplicationCommandInteraction, Option, OptionType
 from disnake.ext import commands as cmd
 
 import cyberbot
+from cyberbot.helpers.messages import default_message
 
 class Fun(cmd.Cog, name="Fun"):
     def __init__(self, bot) -> None:
@@ -18,7 +19,7 @@ class Fun(cmd.Cog, name="Fun"):
             async with cs.get('https://some-random-api.ml/animu/wink') as r:
                 res = await r.json()
                 imgUrl = res['link']
-        embed = disnake.Embed(color=0x9C84EF).set_image(url=imgUrl)
+        embed = default_message().set_image(url=imgUrl)
         await interaction.send(embed=embed)
         
     @cmd.slash_command(
@@ -38,9 +39,8 @@ class Fun(cmd.Cog, name="Fun"):
             async with cs.get('https://some-random-api.ml/animu/pat') as r:
                 res = await r.json()
                 imgUrl = res['link']        
-        embed = disnake.Embed(
-            title=f'{interaction.author.name} stroked {user.name}', 
-            color=0x9C84EF
+        embed = default_message(
+            title=f'{interaction.author.name} stroked {user.name}'
         ).set_image(url=imgUrl)
         await interaction.send(embed=embed)
         
@@ -61,9 +61,8 @@ class Fun(cmd.Cog, name="Fun"):
             async with cs.get('https://some-random-api.ml/animu/hug') as r:
                 res = await r.json()
                 imgUrl = res['link']        
-        embed = disnake.Embed(
-            title=f'{interaction.author.name} hugged {user.name}', 
-            color=0x9C84EF
+        embed = default_message(
+            title=f'{interaction.author.name} hugged {user.name}',
         ).set_image(url=imgUrl)
         await interaction.send(embed=embed)
     
@@ -82,9 +81,9 @@ class Fun(cmd.Cog, name="Fun"):
     async def avatar(self, interaction: ApplicationCommandInteraction, user: disnake.User = None) -> None:
         if user is None:
             user = interaction.author
-        embed = disnake.Embed(
+        embed = default_message(
             title=f"{user.display_name}'s avatar.", 
-            color=0x9C84EF
+            color=user.accent_color
         ).set_image(url=user.avatar)
         await interaction.send(embed=embed)
         

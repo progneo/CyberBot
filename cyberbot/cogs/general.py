@@ -4,28 +4,27 @@ import aiohttp
 from disnake import ApplicationCommandInteraction
 from disnake.ext import commands as cmd
 
-import cyberbot
+from cyberbot.helpers.messages import default_message, error_message
 
 class General(cmd.Cog, name="general"):
-    def __init__(self, bot):
-        self.bot = bot
+    def __init__(self, bot) -> None:
+        self.bot: disnake.Client = bot
         
     @cmd.slash_command(
         name="about",
         description="Get information about bot."
     )
     async def info(self, interaction: ApplicationCommandInteraction) -> None:
-        embed = disnake.Embed(
-            title="Developer: @ProgNeo", 
-            description="Discord Bot",
-            color=0x9C84EF
+        embed = default_message(
+            title=f"CyberBot {cyberbot.version()}", 
+            description="Discord bot with gambling, listening to music, moderation and other interesting things."
         )
         embed.set_author(
-            name=f"CyberBot {cyberbot.version()}",
-            icon_url="https://cdn.discordapp.com/avatars/612885675238359042/ec6ab32d43d62b0a03bb6b3dabdb0b1f.png?size=256"
+            name=f"Developer: ProgNeo#1817",
+            icon_url="https://avatars.githubusercontent.com/u/43195117?v=4"
         )
         embed.set_thumbnail(
-            url="https://avatars.githubusercontent.com/u/43195117?v=4"
+            url="https://cdn.discordapp.com/app-icons/612885675238359042/b1da2d7b58a2f8f8e7723a20222c8f9b.png?size=256"
         )
         embed.add_field(
             name="Bot User:", 
@@ -35,9 +34,12 @@ class General(cmd.Cog, name="general"):
             name="Guilds:", 
             value=str(len(self.bot.guilds))
         )
+        members_count = 0
+        for guild in self.bot.guilds:
+            members_count += guild.member_count
         embed.add_field(
             name="Members:", 
-            value=str(len(set(self.bot.get_all_members())))
+            value=str(members_count)
         )
         embed.add_field(
             name="O.S.:", 
@@ -73,10 +75,9 @@ class General(cmd.Cog, name="general"):
             roles.append(f"[50/{len(roles)}] Roles")
         roles = ", ".join(roles)
         
-        embed = disnake.Embed(
+        embed = default_message(
             title="**Server Name:**",
-            description=f"{interaction.guild}",
-            color=0x9C84EF
+            description=f"{interaction.guild}"
         )
         embed.set_thumbnail(
             url=interaction.guild.icon.url
@@ -107,10 +108,9 @@ class General(cmd.Cog, name="general"):
         description="Check bot latency."
     )
     async def ping(self, interaction: ApplicationCommandInteraction) -> None:
-        embed = disnake.Embed(
+        embed = default_message(
             title="🏓 Pong!",
-            description=f"The bot latency is {round(self.bot.latency * 1000)}ms.",
-            color=0x9C84EF
+            description=f"The bot latency is {round(self.bot.latency * 1000)}ms."
         )
         await interaction.send(embed=embed)
     
@@ -119,20 +119,21 @@ class General(cmd.Cog, name="general"):
         description="Get the invite link of the bot."
     )
     async def invite(self, interaction: ApplicationCommandInteraction) -> None:
-        embed = disnake.Embed(
+        invite = default_message(
             title="Invite link",
-            description=f"Invite me by clicking [here](https://discordapp.com/oauth2/authorize?client_id=612885675238359042&permissions=8&scope=bot",
+            description=f"Invite me by clicking [here](https://discordapp.com/oauth2/authorize?client_id=612885675238359042&permissions=8&scope=bot)",
             color=0xD75BF4
         )
         try:
-            await interaction.author.send(embed=embed)
-            await interaction.send(embed=disnake.Embed(
-                        title="Success",
-                        description=f"Check your private messages",
-                        color=0x9C84EF
-                    ), ephemeral=True)
-        except disnake.Forbidden:
+            await interaction.author.send(embed=invite)
+            embed = default_message(
+                title="Success",
+                description=f"Check your private messages",
+            )
             await interaction.send(embed=embed, ephemeral=True)
+            
+        except disnake.Forbidden:
+            await interaction.send(embed=invite, ephemeral=True)
             
     @cmd.slash_command(
         name="bitcoin",
@@ -144,18 +145,15 @@ class General(cmd.Cog, name="general"):
                 if request.status == 200:
                     data = await request.json(
                         content_type="application/javascript")
-                    embed = disnake.Embed(
+                    embed = default_message(
                         title="Bitcoin price",
-                        description=f"The current price is {data['bpi']['USD']['rate']} :dollar:",
-                        color=0x9C84EF
+                        description=f"The current price is {data['bpi']['USD']['rate']} :dollar:"
                     )
                 else:
-                    embed = disnake.Embed(
-                        title="Error!",
+                    embed = error_message(
                         description="There is something wrong with the API, please try again later",
-                        color=0xE02B2B
                     )
-                await interaction.send(embed=embed)
+                await interaction.send(embed=embed, ephemeral=True)
                 
                 
 def setup(bot):

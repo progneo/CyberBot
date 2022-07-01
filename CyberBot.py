@@ -73,7 +73,7 @@ print(f"""
 \____/\__, /_____/\___/_/  /_____/\____/\__/  
      /____/                      by ProgNeo  
 -------------------
-Discord.py API version: {disnake.__version__}
+Disnake.py API version: {disnake.__version__}
 Python version: {platform.python_version()}
 Running on: {platform.system()} {platform.release()} ({os.name})
 Version: {cyberbot.version()}   
@@ -118,8 +118,7 @@ def init_database() -> None:
     db.execute("CREATE TABLE IF NOT EXISTS `bot_logs` (`timestamp` TEXT, `type` TINYTEXT, `class` TINYTEXT, `message` MEDIUMTEXT)")
     cyberbot.managers.database.create_table("CREATE TABLE IF NOT EXISTS `guild_logs` (`timestamp` TEXT, `guild_id` BIGINT, `channel_id` BIGINT, `message_id` BIGINT, `user_id` BIGINT, `action_type` TINYTEXT, `message` MEDIUMTEXT)")
 
-    print(
-        f"Connected to database ({cyberbot.config.db_host()}) in {round(time.perf_counter() - time_start, 2)}s")
+    print(f"Connected to database ({cyberbot.config.db_host()}) in {round(time.perf_counter() - time_start, 2)}s")
 
     database.commit()
     

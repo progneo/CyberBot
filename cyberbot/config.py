@@ -29,17 +29,5 @@ def db_password():
     return os.environ['DB_PASSWORD']
 
 
-def lavalink_host():
-    return os.environ['LAVALINK_HOST']
-
-
-def lavalink_port():
-    return os.environ['LAVALINK_PORT']
-
-
-def lavalink_password():
-    return os.environ['LAVALINK_PASSWORD']
-
-
 def osu_api_key():
     return os.environ['OSU_API_KEY']

@@ -7,11 +7,11 @@ from disnake import ApplicationCommandInteraction, Option, OptionType
 from disnake.ext import commands as cmd
 
 import cyberbot
+from cyberbot.helpers.messages import error_message
 
 
 class OsuPlayer:
-
-    def __init__(self, player):
+    def __init__(self, player) -> None:
         self.id = player["user_id"]
         self.username = player["username"]
         self.join_date = (player["join_date"].split(" "))[0]
@@ -31,7 +31,7 @@ class OsuPlayer:
         self.country = player["country"]
         self.pp_country_rank = player["pp_country_rank"]
 
-    def display(self, author):
+    def get_embed_info(self, author) -> disnake.Embed:
         em = disnake.Embed(color=0xff00ff)
         em.set_author(name=f"{self.country.upper()} | {self.username}", url=f"https://osu.ppy.sh/u/{self.username}")
         em.add_field(name='Performance', value=self.pp_raw + 'pp')
@@ -74,28 +74,22 @@ class Osu(cmd.Cog):
         if r.status_code != 200:
             print('Osu API Debug: ' + str(r.status_code) + ' | ' + r.text)
             if r.status_code == 401:
-                await interaction.send(embed=disnake.Embed(
-                title="Error!",
-                description="Invalid osu!api key. Please contact your server owner.",
-                color=0xE02B2B
-            ))
+                embed=error_message(description="Invalid osu!api key. Please contact your server owner.")
+                await interaction.send(embed=embed, ephemeral=True)
             else:
-                await interaction.send(embed=disnake.Embed(
-                title="Error!",
-                description=f"Failed to fetch osu!api data. ({str(r.status_code)})",
-                color=0xE02B2B
-            ))
+                embed = error_message(description=f"Failed to fetch osu!api data. ({str(r.status_code)})")
+                await interaction.send(embed=embed, ephemeral=True)
             return
 
         user = json.loads(r.text)
         if len(user) < 1:
-            await interaction.send(embed=disnake.Embed(
-                title="Error!",
-                description=f"osu! player not found.",
-                color=0xE02B2B
-            ))
+            embed = error_message(description=f"osu! player **{name}** not found.")
+            
+            await interaction.send(embed=embed)
             return
-        await interaction.send(embed=OsuPlayer(user[0]).display(interaction.author))
+        
+        embed = OsuPlayer(user[0]).get_embed_info(interaction.author)
+        await interaction.send(embed=embed)
 
 
 def setup(bot):

@@ -1,38 +1,31 @@
-import io
 import json
 import random 
 from optparse import Option
 
-import aiohttp
 import disnake
 import requests
 from disnake import ApplicationCommandInteraction, Option, OptionType
 from disnake.ext import commands as cmd
 
-import cyberbot
+from cyberbot.helpers.messages import default_message, error_message
 
 
 class Anime(cmd.Cog):
     def __init__(self, bot):
         self.bot = bot
 
-    def neko_api(self, interaction: ApplicationCommandInteraction, x):
+    def neko_api(self, interaction: ApplicationCommandInteraction, x) -> disnake.Embed:
         try:
             req = requests.get(f'https://nekos.life/api/v2/img/{x}')
             if req.status_code != 200:
                 print("Could not get a neko")
             apijson = json.loads(req.text)
             url = apijson["url"]
-            em = disnake.Embed(
-                color=0x9C84EF,
-            )
-            em.set_image(url=url)
+            em = default_message().set_image(url=url)
             return em
         except:
-            return disnake.Embed(
-                title="Error!",
-                description=f"Can't obtain image ({req.status_code})",
-                color=0xE02B2B
+            return error_message(
+                description=f"Can't obtain image ({req.status_code})"
             )
 
     @cmd.slash_command(
@@ -59,10 +52,9 @@ class Anime(cmd.Cog):
             await interaction.send(embed=self.neko_api(interaction, type))
         else:
             await interaction.send(
-                embed=disnake.Embed(
+                embed=error_message(
                     title="Invalid argument!",
-                    description=f"Valid argument(s): ``{api_types}``",
-                    color=0xE02B2B
+                    description=f"Valid argument(s): ``{api_types}``"
                 ),
                 ephemeral=True
             )

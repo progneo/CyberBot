@@ -2,6 +2,8 @@ import disnake
 from disnake import ApplicationCommandInteraction, Option, OptionType
 from disnake.ext import commands
 
+from cyberbot.helpers.messages import default_message
+
 class Owner(commands.Cog, name="owner"):
     def __init__(self, bot):
         self.bot = bot
@@ -12,9 +14,8 @@ class Owner(commands.Cog, name="owner"):
     )
     @commands.is_owner()
     async def shutdown(self, interaction: ApplicationCommandInteraction) -> None:
-        embed = disnake.Embed(
-            description="Shutting down. Bye! :wave:",
-            color=0x9C84EF
+        embed = default_message(
+            description="Shutting down. Bye! :wave:"
         )
         await interaction.send(embed=embed)
         await self.bot.close()
@@ -49,9 +50,8 @@ class Owner(commands.Cog, name="owner"):
     )
     @commands.is_owner()
     async def embed(self, interaction: ApplicationCommandInteraction, message: str) -> None:
-        embed = disnake.Embed(
-            description=message,
-            color=0x9C84EF
+        embed = default_message(
+            description=message
         )
         await interaction.send(embed=embed)
         

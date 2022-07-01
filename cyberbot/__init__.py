@@ -8,9 +8,10 @@ from .exceptions import *
 from .managers import *
 from .setup import *
 from .config import *
+from .helpers import *
 
 def version():
-    return "v0.1.0-alpha"
+    return "v0.2.0-alpha"
 
 
 def config_version():
