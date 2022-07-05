@@ -16,6 +16,8 @@ from dotenv import load_dotenv
 
 import cyberbot
 from cyberbot.exceptions import *
+from cyberbot.helpers.messages import error_message
+from cyberbot.managers.database import Database
 
 req = requests.get(f'https://api.github.com/repos/ProgNeo/CyberBot/tags')
 response = json.loads(req.text)
@@ -81,9 +83,12 @@ Version: {cyberbot.version()}
 
 @bot.event
 async def on_ready():
-    status_task.start()
     print(f"Connected to Discord API in {round(time.perf_counter() - discord_time_start, 2)}s")
-    print("-------------------")
+    status_task.start()
+    
+    database = connect_database()
+    load_commands(database)
+    
     for guild in bot.guilds:
         # TODO: add guilds to database
         pass
@@ -95,32 +100,15 @@ async def status_task() -> None:
     await bot.change_presence(activity=disnake.Game(random.choice(statuses)))
     
     
-def load_commands() -> None:
-    for file in os.listdir(f"./cyberbot/cogs"):
-        if file.endswith(".py"):
-            extension = file[:-3]
-            try:
-                bot.load_extension(f"cyberbot.cogs.{extension}")
-                print(f"Loaded extension '{extension}'")
-            except Exception as e:
-                exception = f"{type(e).__name__}: {e}"
-                print(f"Failed to load extension {extension}\n{exception}")
-    print("-------------------")
-
-def init_database() -> None:
-    time_start = time.perf_counter()
-    database = cyberbot.managers.database.__init__()
-    db = cyberbot.managers.database.db(database)
-    db.execute(f'USE `{cyberbot.config.db_database()}`')
-    db.execute('CREATE TABLE IF NOT EXISTS `guilds` (`guild_id` BIGINT, `guild_name` TINYTEXT)')
-    db.execute('CREATE TABLE IF NOT EXISTS `channels` (`channel_id` BIGINT, `channel_name` TINYTEXT)')
-    db.execute("CREATE TABLE IF NOT EXISTS `users` (`user_id` BIGINT, `user_name` TINYTEXT, `balance` BIGINT, `xp` INT, `lvl` INT, `user_discriminator` INT)")
-    db.execute("CREATE TABLE IF NOT EXISTS `bot_logs` (`timestamp` TEXT, `type` TINYTEXT, `class` TINYTEXT, `message` MEDIUMTEXT)")
-    cyberbot.managers.database.create_table("CREATE TABLE IF NOT EXISTS `guild_logs` (`timestamp` TEXT, `guild_id` BIGINT, `channel_id` BIGINT, `message_id` BIGINT, `user_id` BIGINT, `action_type` TINYTEXT, `message` MEDIUMTEXT)")
-
-    print(f"Connected to database ({cyberbot.config.db_host()}) in {round(time.perf_counter() - time_start, 2)}s")
-
-    database.commit()
+def load_commands(database: Database) -> None:
+    cyberbot.events.__init__(bot, database)
+    cyberbot.cogs.anime.setup(bot)
+    cyberbot.cogs.fun.setup(bot)
+    cyberbot.cogs.general.setup(bot)
+    cyberbot.cogs.github.setup(bot)
+    cyberbot.cogs.moderation.setup(bot)
+    cyberbot.cogs.osu.setup(bot)
+    cyberbot.cogs.owner.setup(bot)
     
     
 @bot.event
@@ -139,67 +127,24 @@ async def on_slash_command(interaction: ApplicationCommandInteraction) -> None:
 @bot.event
 async def on_slash_command_error(interaction: ApplicationCommandInteraction, error: Exception) -> None:
     if isinstance(error, UserBlacklisted):
-        embed = disnake.Embed(
-            title="Error!",
-            description="You are blacklisted from using the bot.",
-            color=0xE02B2B
-        )
+        embed = error_message(description="You are blacklisted from using the bot.")
         print("A blacklisted user tried to execute a command.")
         return await interaction.send(embed=embed, ephemeral=True)
     elif isinstance(error, cmd.errors.MissingPermissions):
-        embed = disnake.Embed(
-            title="Error!",
-            description="You are missing the permission(s) `" + ", ".join(
-                error.missing_permissions) + "` to execute this command!",
-            color=0xE02B2B
-        )
+        embed = error_message(description=f"You are missing the permission {error.missing_permissions} to execute this command!")
         print("A blacklisted user tried to execute a command.")
         return await interaction.send(embed=embed, ephemeral=True)
     raise error
 
 
-@bot.event
-async def on_command_completion(context: Context) -> None:
-    full_command_name = context.command.qualified_name
-    split = full_command_name.split(" ")
-    executed_command = str(split[0])
-    print(
-        f"Executed {executed_command} command in {context.guild.name} (ID: {context.message.guild.id}) by {context.message.author} (ID: {context.message.author.id})")
-
-
-@bot.event
-async def on_command_error(context: Context, error) -> None:
-    if isinstance(error, cmd.CommandOnCooldown):
-        minutes, seconds = divmod(error.retry_after, 60)
-        hours, minutes = divmod(minutes, 60)
-        hours = hours % 24
-        embed = disnake.Embed(
-            title="Hey, please slow down!",
-            description=f"You can use this command again in {f'{round(hours)} hours' if round(hours) > 0 else ''} {f'{round(minutes)} minutes' if round(minutes) > 0 else ''} {f'{round(seconds)} seconds' if round(seconds) > 0 else ''}.",
-            color=0xE02B2B
-        )
-        await context.send(embed=embed)
-    elif isinstance(error, cmd.MissingPermissions):
-        embed = disnake.Embed(
-            title="Error!",
-            description="You are missing the permission(s) `" + ", ".join(
-                error.missing_permissions) + "` to execute this command!",
-            color=0xE02B2B
-        )
-        await context.send(embed=embed)
-    elif isinstance(error, cmd.MissingRequiredArgument):
-        embed = disnake.Embed(
-            title="Error!",
-            description=str(error).capitalize(),
-            color=0xE02B2B
-        )
-        await context.send(embed=embed)
-    raise error
-
-
-if __name__ == "__main__":
-    load_commands()
-    init_database()
+def connect_database() -> Database:
+    time_start = time.perf_counter()
+    database = Database()
+    database.create_tables()
+    print(f"Connected to database ({cyberbot.config.db_host()}) in {round(time.perf_counter() - time_start, 2)}s")
+    print("-------------------")
+    return database
+  
     
 try:
     discord_time_start = time.perf_counter()

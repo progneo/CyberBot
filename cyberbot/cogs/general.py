@@ -17,7 +17,7 @@ class General(cmd.Cog, name="general"):
     async def info(self, interaction: ApplicationCommandInteraction) -> None:
         embed = default_message(
             title=f"CyberBot {cyberbot.version()}", 
-            description="Discord bot with gambling, listening to music, moderation and other interesting things."
+            description="Discord bot with gambling, moderation and other interesting things."
         )
         embed.set_author(
             name=f"Developer: ProgNeo#1817",

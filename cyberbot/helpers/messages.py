@@ -1,4 +1,3 @@
-import disnake
 from disnake import Colour, Embed
 
 def default_message(title: str = None, description: str = None, color: Colour = 0x8c73e6) -> Embed:

@@ -42,6 +42,7 @@ class Fun(cmd.Cog, name="Fun"):
         embed = default_message(
             title=f'{interaction.author.name} stroked {user.name}'
         ).set_image(url=imgUrl)
+        cyberbot.Database.get_tables_list()
         await interaction.send(embed=embed)
         
     @cmd.slash_command(
