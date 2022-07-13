@@ -10,14 +10,12 @@ import disnake
 from disnake import ApplicationCommandInteraction
 from disnake.ext import commands as cmd
 from disnake.ext import tasks
-from disnake.ext.commands import Bot
-from disnake.ext.commands import Context
 from dotenv import load_dotenv
 
 import cyberbot
+from cyberbot.cogs import github
 from cyberbot.exceptions import *
 from cyberbot.helpers.messages import error_message
-from cyberbot.managers.database import Database
 
 req = requests.get(f'https://api.github.com/repos/ProgNeo/CyberBot/tags')
 response = json.loads(req.text)
@@ -86,12 +84,14 @@ async def on_ready():
     print(f"Connected to Discord API in {round(time.perf_counter() - discord_time_start, 2)}s")
     status_task.start()
     
-    database = connect_database()
-    load_commands(database)
+    load_commands()
+    connect_database()
     
     for guild in bot.guilds:
-        # TODO: add guilds to database
-        pass
+        cyberbot.database.add_guild(guild)
+        for user in guild.members:
+            if user.bot is False:
+                cyberbot.database.add_user(user)
 
 
 @tasks.loop(minutes=1.0)
@@ -100,8 +100,8 @@ async def status_task() -> None:
     await bot.change_presence(activity=disnake.Game(random.choice(statuses)))
     
     
-def load_commands(database: Database) -> None:
-    cyberbot.events.__init__(bot, database)
+def load_commands() -> None:
+    cyberbot.events.__init__(bot)
     cyberbot.cogs.anime.setup(bot)
     cyberbot.cogs.fun.setup(bot)
     cyberbot.cogs.general.setup(bot)
@@ -137,15 +137,13 @@ async def on_slash_command_error(interaction: ApplicationCommandInteraction, err
     raise error
 
 
-def connect_database() -> Database:
+def connect_database():
     time_start = time.perf_counter()
-    database = Database()
-    database.create_tables()
+    cyberbot.database.create_tables()
     print(f"Connected to database ({cyberbot.config.db_host()}) in {round(time.perf_counter() - time_start, 2)}s")
     print("-------------------")
-    return database
-  
-    
+
+
 try:
     discord_time_start = time.perf_counter()
     bot.run(cyberbot.config.bot_token())
