@@ -60,9 +60,8 @@ if os.getenv('CONFIG_VERSION') != cyberbot.config_version():
 print("Initializing bot...")
 
 intents = disnake.Intents.default()
-
+intents.members = True
 bot = cmd.Bot(intents=intents, help_command=None)
-
 
 
 print(f"""
@@ -87,12 +86,6 @@ async def on_ready():
     load_commands()
     connect_database()
     
-    for guild in bot.guilds:
-        cyberbot.database.add_guild(guild)
-        for user in guild.members:
-            if user.bot is False:
-                cyberbot.database.add_user(user)
-
 
 @tasks.loop(minutes=1.0)
 async def status_task() -> None:
@@ -146,6 +139,7 @@ def connect_database():
 
 try:
     discord_time_start = time.perf_counter()
+    
     bot.run(cyberbot.config.bot_token())
 except Exception as e:
     print(f"[/!\\] Error: Failed to connect to DiscordAPI. Please check your bot token!\n{e}")

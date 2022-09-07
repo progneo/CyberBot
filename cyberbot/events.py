@@ -1,5 +1,9 @@
+import random 
 import disnake
 from disnake.ext import commands as cmd
+
+import cyberbot
+from cyberbot import default_message
 
 def __init__(bot: disnake.Client):
     join(bot)
@@ -12,9 +16,12 @@ def __init__(bot: disnake.Client):
 
 def join(bot: disnake.Client):
     @bot.event
-    async def on_member_join(self, member):
-        # TODO: something idk
-        pass
+    async def on_member_join(member: disnake.Member):
+        channel_id = cyberbot.database.get_greetings_channel(member.guild)
+        if channel_id != 0:
+            channel: disnake.TextChannel = bot.get_channel(channel_id)
+            channel.send(embed=default_message("New member!", f"Welcome, {member.mention}!").set_thumbnail(member.avatar))
+            cyberbot.add_user(member)
 
 
 def leave(bot: disnake.Client):
@@ -33,10 +40,8 @@ def on_guild_join(bot: disnake.Client):
 
 def message_send(bot: disnake.Client):
     @bot.event
-    async def on_message(message):
-        # TODO: add exp
-        pass
-        await bot.process_commands(message)
+    async def on_message(message: disnake.Message):
+        cyberbot.database.change_xp(message.author, random.randrange(1, 5))
 
 
 def message_edit(bot: disnake.Client):

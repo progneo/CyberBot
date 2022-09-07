@@ -35,7 +35,8 @@ def create_tables() -> None:
 def get_guild(guild: disnake.Guild) -> tuple:
     with closing(connect()) as db:
         with db.cursor(buffered=True) as cursor:
-            return cursor.execute(f"SELECT * FROM `guilds` WHERE guild_id = {guild.id}").fetchone()
+            cursor.execute(f"SELECT * FROM `guilds` WHERE guild_id = {guild.id}")
+            return cursor.fetchone()
 
 
 def add_guild(guild: disnake.Guild) -> None:
@@ -51,14 +52,15 @@ def add_guild(guild: disnake.Guild) -> None:
 def get_greetings_channel(guild: disnake.Guild) -> int:
     with closing(connect()) as db:
         with db.cursor(buffered=True) as cursor:
-            return cursor.execute(f"SELECT greetings_channel_id FROM `guilds` WHERE guild_id = {guild.id}").fetchone()[0]
-            
+            cursor.execute(f"SELECT greetings_channel_id FROM `guilds` WHERE guild_id = {guild.id}")
+            return cursor.fetchone()[0]
     
     
 def get_log_channel(guild: disnake.Guild) -> int:
     with closing(connect()) as db:
         with db.cursor(buffered=True) as cursor:
-            return cursor.execute(f"SELECT log_channel_id FROM `guilds` WHERE guild_id = {guild.id}").fetchone()[0]
+            cursor.execute(f"SELECT log_channel_id FROM `guilds` WHERE guild_id = {guild.id}")
+            return cursor.fetchone()[0]
 
 
 def set_greetings_channel_id(channel: disnake.TextChannel) -> None:
@@ -78,7 +80,8 @@ def set_log_channel_id(channel: disnake.TextChannel) -> None:
 def get_user(user: disnake.Member) -> tuple:
     with closing(connect()) as db:
         with db.cursor(buffered=True) as cursor:
-            return cursor.execute(f"SELECT * FROM `users` WHERE user_id = {user.id}").fetchone()
+            cursor.execute(f"SELECT * FROM `users` WHERE user_id = {user.id}").fetchone()
+            return cursor.fetchone()
 
 
 def add_user(user: disnake.Member) -> None:
@@ -106,7 +109,8 @@ def get_lvl(user: disnake.Member) -> int:
 def change_balance(user: disnake.Member, amount: int) -> None:
     with closing(connect()) as db:
         with db.cursor(buffered=True) as cursor:
-            balance = cursor.execute(f"SELECT balance FROM `users` WHERE user_id = {user.id}").fetchone()[1] + amount
+            cursor.execute(f"SELECT balance FROM `users` WHERE user_id = {user.id}")
+            balance = cursor.fetchone()[1] + amount
             cursor.execute(f"UPDATE `users` SET balance = {balance} WHERE user_id = {user.id}")
             db.commit()
     
@@ -114,9 +118,17 @@ def change_balance(user: disnake.Member, amount: int) -> None:
 def change_xp(user: disnake.Member, amount: int) -> None:
     with closing(connect()) as db:
         with db.cursor(buffered=True) as cursor:
-            result = cursor.execute(f"SELECT balance FROM `users` WHERE user_id = {user.id}").fetchone()
-            xp = result[2] + amount
-            lvl = result[3]
+            cursor.execute(f"SELECT * FROM `users` WHERE user_id = {user.id}")
+            result = cursor.fetchone()
+            
+            if result is None:
+                add_user(user)
+                xp = 0
+                lvl = 1
+            else:
+                xp = result[2] + amount
+                lvl = result[3]
+                
             if xp >= lvl * 50:
                 xp -= lvl * 50
                 lvl += 1
